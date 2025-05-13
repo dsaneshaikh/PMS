@@ -38,7 +38,7 @@ const startServer = async () => {
     // Enable CORS for your frontend origin
     app.use(
       cors({
-        origin: ["http://localhost:5173", "http://localhost:5174"], // Allow both ports
+        origin: ["http://localhost:5173", "http://localhost:5174","https://pms-danish.netlify.app"], // Allow both ports
         credentials: true,       // Allow cookies (for JWTs)
       })
     );
