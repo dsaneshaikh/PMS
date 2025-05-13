@@ -7,7 +7,16 @@ const endpoints = config.endpoints.users;
 
 export const getAllUsers = async () => {
   try {
-    const res = await fetch(`${baseURL}${endpoints.list}`);
+    // Get token from localStorage
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    
+    const res = await fetch(`${baseURL}${endpoints.list}`, {
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : ''
+      },
+      credentials: 'include'
+    });
+    
     if (!res.ok) {
       throw new Error(`Failed to fetch users: ${res.status} ${res.statusText}`);
     }
@@ -20,9 +29,16 @@ export const getAllUsers = async () => {
 
 export const createUser = async ({ username, password, roles }) => {
   try {
+    // Get token from localStorage
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    
     const res = await fetch(`${baseURL}${endpoints.create}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        'Authorization': token ? `Bearer ${token}` : ''
+      },
+      credentials: 'include',
       body: JSON.stringify({ username, password, roles }),
     });
     if (!res.ok) {
@@ -37,7 +53,13 @@ export const createUser = async ({ username, password, roles }) => {
 
 export const getMe = async () => {
   try {
+    // Get token from localStorage
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    
     const res = await fetch(`${baseURL}${endpoints.me}`, {
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : ''
+      },
       credentials: "include",
     });
     if (!res.ok) {
@@ -54,9 +76,19 @@ export const getMe = async () => {
 
 export const updateUserRoles = async ({ username, roles }) => {
   try {
-    const res = await fetch(`${baseURL}${endpoints.updateRoles}`, {
+    // Get token from localStorage
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    
+    console.log(`Attempting to update roles for user: ${username}`);
+    
+    // Use direct URL construction to avoid path issues
+    const res = await fetch(`${baseURL}users/roles`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        'Authorization': token ? `Bearer ${token}` : ''
+      },
+      credentials: 'include',
       body: JSON.stringify({ username, roles }),
     });
     if (!res.ok) {
@@ -73,9 +105,19 @@ export const updateUserRoles = async ({ username, roles }) => {
 
 export const updatePassword = async ({ username, password }) => {
   try {
-    const res = await fetch(`${baseURL}${endpoints.updatePassword}`, {
+    // Get token from localStorage
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    
+    console.log(`Attempting to update password for user: ${username}`);
+    
+    // Use direct URL construction to avoid path issues
+    const res = await fetch(`${baseURL}users/password`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        'Authorization': token ? `Bearer ${token}` : ''
+      },
+      credentials: 'include',
       body: JSON.stringify({ username, password }),
     });
     if (!res.ok) {
@@ -92,14 +134,29 @@ export const updatePassword = async ({ username, password }) => {
 
 export const deleteUser = async (username) => {
   try {
-    const res = await fetch(`${baseURL}${endpoints.delete}`, {
+    // Get token from localStorage
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    
+    console.log(`Attempting to delete user: ${username}`);
+    
+    // Use RESTful URL parameter approach
+    const res = await fetch(`${baseURL}users/${encodeURIComponent(username)}`, {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username }),
+      headers: { 
+        'Authorization': token ? `Bearer ${token}` : ''
+      },
+      credentials: 'include'
+      // No body needed with URL parameter approach
     });
+    
     if (!res.ok) {
-      throw new Error(`Failed to delete user: ${res.status} ${res.statusText}`);
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || `Failed to delete user: ${res.status} ${res.statusText}`
+      );
     }
+    
+    console.log(`User deleted successfully: ${username}`);
     return await res.json();
   } catch (error) {
     console.error("deleteUser error:", error);

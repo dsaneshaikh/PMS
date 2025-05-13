@@ -1,38 +1,54 @@
 import config from "../config";
-const baseUrl = config.baseURL;
+const baseURL = config.baseURL;
 
-const login = async (username, password) => {
+export const login = async (username, password) => {
+  const url = `${baseURL}${config.endpoints.auth.login}`;
   const options = {
     method: "POST",
+    credentials: "include",            // ← allow cookies
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ username, password }),
   };
+
   try {
-    const login = await fetch(
-      `${baseUrl}${config.endpoints.auth.login}`,
-      options
-    );
-    return await login.json();
+    const res = await fetch(url, options);
+
+    // Network-level OK?
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Login failed: ${res.status}`);
+    }
+
+    return await res.json();
   } catch (error) {
-    console.log(error);
+    console.error("login error:", error);
+    return { success: false, message: error.message || 'Network error. Please try again later.' };
   }
 };
-const logout = async () => {
+
+export const logout = async () => {
+  const url = `${baseURL}${config.endpoints.auth.logout}`;
   const options = {
     method: "POST",
+    credentials: "include",            // ← allow cookies
     headers: {
       "Content-Type": "application/json",
     },
   };
+
   try {
-    const logout = await fetch(
-      `${baseUrl}${config.endpoints.auth.logout}`,
-      options
-    );
-    return await logout.json();
+    const res = await fetch(url, options);
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Logout failed: ${res.status}`);
+    }
+
+    return await res.json();
   } catch (error) {
-    console.log(error);
+    console.error("logout error:", error);
+    return { success: false, message: error.message || 'Network error. Please try again later.' };
   }
 };

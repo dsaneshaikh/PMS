@@ -36,13 +36,32 @@ exports.getAllPermissions = async (req, res) => {
 exports.deletePermission = async (req, res) => {
   try {
     const { id } = req.params;
+    
+    console.log(`Attempting to delete permission with ID: ${id}`);
+    console.log('Request params:', req.params);
+    
+    // Check if ID is valid MongoDB ObjectId
+    if (!id || id.length !== 24) {
+      console.error(`Invalid permission ID format: ${id}`);
+      return res.status(400).json({ message: "Invalid permission ID format" });
+    }
+    
     const deleted = await Permission.findByIdAndDelete(id);
-    if (!deleted)
+    
+    if (!deleted) {
+      console.error(`Permission not found with ID: ${id}`);
       return res.status(404).json({ message: "Permission not found" });
+    }
 
-    res.json({ message: "Permission deleted" });
+    console.log(`Permission deleted successfully: ${id}`);
+    res.json({ message: "Permission deleted", id });
   } catch (err) {
     console.error("deletePermission error:", err);
-    res.status(500).json({ message: "Server error" });
+    // Send more detailed error information including the original error message
+    res.status(500).json({ 
+      message: "Server error", 
+      error: err.message,
+      id: req.params.id 
+    });
   }
 };

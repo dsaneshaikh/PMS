@@ -1,12 +1,56 @@
-# React + Vite
+# Permission Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A comprehensive permission management system built with React, Redux Toolkit, and React Router. This system allows administrators to manage permissions, roles, and users while providing a tailored experience for users based on their assigned permissions.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Admin Panel
+- Create and manage permissions
+- Create roles with specific permissions
+- Manage users and assign roles to them
+- Set login credentials for users
 
-## Expanding the ESLint configuration
+### User Panel
+- Login with credentials provided by admin
+- View personalized navigation menu based on assigned permissions
+- Access feature pages based on permissions
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Technology Stack
+
+- **Frontend Framework**: React
+- **State Management**: Redux Toolkit
+- **Routing**: React Router
+- **Styling**: Tailwind CSS
+- **Build Tool**: Vite
+
+## Project Structure
+
+The project follows a feature-based architecture:
+
+```
+src/
+├── app/              # Application-wide configurations
+├── features/         # Feature modules
+│   ├── admin/        # Admin-specific features
+│   ├── auth/         # Authentication features
+│   └── user/         # User-specific features
+├── shared/           # Shared components/utilities
+└── utils/            # Utility functions
+```
+
+## Getting Started
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+3. Build for production:
+   ```bash
+   npm run build
+   ```

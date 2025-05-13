@@ -59,3 +59,43 @@ exports.deleteRole = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Update role permissions
+exports.updateRolePermissions = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { permissions } = req.body;
+    
+    if (!Array.isArray(permissions)) {
+      return res.status(400).json({ message: "permissions[] is required and must be an array" });
+    }
+
+    // Verify all permissions exist
+    const foundPermissions = await Permission.find({
+      _id: { $in: permissions },
+    });
+    
+    if (foundPermissions.length !== permissions.length) {
+      return res.status(400).json({ message: "Some permissions are invalid" });
+    }
+
+    // Find and update the role
+    const updatedRole = await Role.findByIdAndUpdate(
+      id,
+      { permissions },
+      { new: true }
+    ).populate("permissions", "name");
+
+    if (!updatedRole) {
+      return res.status(404).json({ message: "Role not found" });
+    }
+
+    res.json({ 
+      message: "Role permissions updated successfully", 
+      role: updatedRole 
+    });
+  } catch (err) {
+    console.error("updateRolePermissions error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

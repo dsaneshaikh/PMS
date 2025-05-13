@@ -1,6 +1,5 @@
 // controllers/auth.js
 const User = require("../models/admin/userSchema");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const login = async (req, res) => {
@@ -17,18 +16,57 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "User not found" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
-    if (!isMatch) {
+    // Direct password comparison (no bcrypt)
+    if (password !== user.password) {
       return res.status(401).json({ message: "Password not correct" });
     }
 
-    // Successful login → generate token
+    // Get user permissions by populating roles and their permissions
+    const userWithRoles = await User.findById(user._id)
+      .populate({
+        path: 'roles',
+        populate: { path: 'permissions' }
+      });
+      
+    // Extract unique permission objects from roles
+    const uniquePermissionMap = new Map();
+    if (userWithRoles.roles && userWithRoles.roles.length > 0) {
+      userWithRoles.roles.forEach(role => {
+        if (role.permissions && role.permissions.length > 0) {
+          role.permissions.forEach(perm => {
+            if (perm && perm._id && !uniquePermissionMap.has(perm._id.toString())) {
+              uniquePermissionMap.set(perm._id.toString(), {
+                _id: perm._id,
+                name: perm.name,
+                description: perm.description
+              });
+            }
+          });
+        }
+      });
+    }
+    
+    // Convert Map to Array of permission objects
+    const permissions = Array.from(uniquePermissionMap.values());
+    
+    // Generate token
     const token = jwt.sign(
-      { userId: user._id, roles: user.roles.map((r) => r.name) },
-      process.env.JWT_SECRET // store your secret in .env
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
     );
 
-    return res.json({ token, username: user.username });
+    // Return response in the format expected by frontend
+    return res.json({
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        isAdmin: userWithRoles.roles.some(role => role.name === 'Administrator'),
+        token
+      },
+      permissions: permissions
+    });
   } catch (err) {
     console.error("Login error:", err);
     return res.status(500).json({ message: "Internal server error" });

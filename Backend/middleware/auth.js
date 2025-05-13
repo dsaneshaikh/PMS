@@ -11,7 +11,7 @@ exports.auth = async (req, res, next) => {
       return res.status(401).json({ message: "Authentication required" });
 
     // 2. Verify it
-    const payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    const payload = jwt.verify(token, process.env.JWT_SECRET); // Changed to match auth controller
 
     // 3. Lookup the user and attach to req
     const user = await User.findById(payload.userId);
@@ -33,6 +33,14 @@ exports.permit = (permissionName) => async (req, res, next) => {
       populate: { path: "permissions", select: "name" },
     });
 
+    // Special case: Check if any of the user's roles is named 'Administrator'
+    // If so, automatically grant all permissions
+    const isAdmin = user.roles.some(role => role.name === 'Administrator');
+    if (isAdmin) {
+      console.log('Administrator bypassing permission check for', permissionName);
+      return next(); // Skip permission check for admin users
+    }
+
     // 2. Flatten all permission names
     const perms = new Set();
     user.roles.forEach((role) =>
@@ -43,7 +51,7 @@ exports.permit = (permissionName) => async (req, res, next) => {
     if (!perms.has(permissionName)) {
       return res
         .status(403)
-        .json({ message: "Forbidden: insufficient rights" });
+        .json({ message: `Forbidden: insufficient rights (${permissionName} required)` });
     }
 
     next();

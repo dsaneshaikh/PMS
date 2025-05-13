@@ -1,6 +1,5 @@
 // controllers/userController.js
 
-const bcrypt = require("bcrypt");
 const User = require("../models/admin/userSchema");
 const Role = require("../models/admin/roleSchema");
 
@@ -14,8 +13,7 @@ exports.createUser = async (req, res) => {
         .json({ message: "username, password, and roles[] are required" });
     }
 
-    // 1. Hash password
-    const passwordHash = await bcrypt.hash(password, 10);
+    // Store password directly without hashing
 
     // 2. Validate roles
     const foundRoles = await Role.find({ _id: { $in: roles } });
@@ -26,7 +24,7 @@ exports.createUser = async (req, res) => {
     // 3. Create user
     const user = new User({
       username,
-      passwordHash,
+      password, // Store the plain password
       roles,
     });
     await user.save();
@@ -50,7 +48,7 @@ exports.getMe = async (req, res) => {
   try {
     // req.userId set by auth middleware
     const user = await User.findById(req.userId)
-      .select("-passwordHash")
+      .select("-password")
       .populate({
         path: "roles",
         populate: { path: "permissions" },
@@ -69,7 +67,7 @@ exports.getMe = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find()
-      .select("-passwordHash")
+      .select("-password")
       .populate("roles", "name");
     res.json(users);
   } catch (err) {
@@ -100,7 +98,7 @@ exports.updateUserRoles = async (req, res) => {
       { roles },
       { new: true }
     )
-      .select("-passwordHash")
+      .select("-password")
       .populate("roles", "name");
 
     if (!updated) return res.status(404).json({ message: "User not found" });
@@ -125,11 +123,10 @@ exports.updatePassword = async (req, res) => {
         .json({ message: "username and new password are required" });
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
-
+    // Update with plain password
     const updated = await User.findOneAndUpdate(
       { username },
-      { passwordHash },
+      { password },
       { new: true }
     );
 
@@ -145,17 +142,27 @@ exports.updatePassword = async (req, res) => {
 // Delete a user (admin only)
 exports.deleteUser = async (req, res) => {
   try {
-    const { username } = req.body;
+    // Get username directly from URL params now
+    const { username } = req.params;
+    
+    console.log('DELETE USER - username from params:', username);
+    
     if (!username) {
-      return res.status(400).json({ message: "username is required" });
+      return res.status(400).json({ message: "Username is required as URL parameter" });
     }
-
+    
+    console.log(`Attempting to delete user with username: ${username}`);
+    
     const removed = await User.findOneAndDelete({ username });
-    if (!removed) return res.status(404).json({ message: "User not found" });
-
+    if (!removed) {
+      console.log(`User not found: ${username}`);
+      return res.status(404).json({ message: `User '${username}' not found` });
+    }
+    
+    console.log(`User deleted successfully: ${username}`);
     res.json({ message: `User '${username}' deleted successfully` });
   } catch (err) {
     console.error("deleteUser error:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error: " + err.message });
   }
 };
