@@ -1,4 +1,4 @@
-// controllers/auth.js
+
 const User = require("../models/admin/userSchema");
 const jwt = require("jsonwebtoken");
 
@@ -16,12 +16,11 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "User not found" });
     }
 
-    // Direct password comparison (no bcrypt)
+ 
     if (password !== user.password) {
       return res.status(401).json({ message: "Password not correct" });
     }
 
-    // Get user permissions by populating roles and their permissions
     const userWithRoles = await User.findById(user._id)
       .populate({
         path: 'roles',
@@ -56,7 +55,7 @@ const login = async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    // Return response in the format expected by frontend
+    
     return res.json({
       success: true,
       user: {

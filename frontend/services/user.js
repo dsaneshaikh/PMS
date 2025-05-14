@@ -1,4 +1,4 @@
-// src/services/userService.js
+
 
 import config from "../config";
 
@@ -110,7 +110,7 @@ export const updatePassword = async ({ username, password }) => {
     
     console.log(`Attempting to update password for user: ${username}`);
     
-    // Use direct URL construction to avoid path issues
+
     const res = await fetch(`${baseURL}users/password`, {
       method: "PUT",
       headers: { 
@@ -139,14 +139,14 @@ export const deleteUser = async (username) => {
     
     console.log(`Attempting to delete user: ${username}`);
     
-    // Use RESTful URL parameter approach
+
     const res = await fetch(`${baseURL}users/${encodeURIComponent(username)}`, {
       method: "DELETE",
       headers: { 
         'Authorization': token ? `Bearer ${token}` : ''
       },
       credentials: 'include'
-      // No body needed with URL parameter approach
+     
     });
     
     if (!res.ok) {

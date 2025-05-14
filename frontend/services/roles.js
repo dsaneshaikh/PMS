@@ -1,7 +1,6 @@
-// services/roleService.js
 
 import config from "../config";
-const baseURL = config.baseURL; // matches your `baseURL` key
+const baseURL = config.baseURL; 
 
 /**
  * GET /roles
@@ -28,18 +27,14 @@ export const getAllRoles = async () => {
   }
 };
 
-/**
- * POST /roles
- * @param {string} name
- * @param {Array<string>} permissions  // array of permission IDs
- */
+
 export const createRole = async (name, permissions = []) => {
   try {
     // Get token from localStorage
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     
     const res = await fetch(
-      `${baseURL}${config.endpoints.roles.list}`, // POST to the same “list” path
+      `${baseURL}${config.endpoints.roles.list}`, 
       {
         method: "POST",
         headers: { 
@@ -60,15 +55,7 @@ export const createRole = async (name, permissions = []) => {
   }
 };
 
-/**
- * DELETE /roles/:id
- * @param {string} id
- */
-/**
- * Update the permissions of a role
- * @param {string} id - The role ID
- * @param {Array<string>} permissions - Array of permission IDs
- */
+
 export const updateRolePermissions = async (id, permissions = []) => {
   try {
     // Get token from localStorage
@@ -112,8 +99,7 @@ export const deleteRole = async (id) => {
     
     console.log(`Attempting to delete role with ID: ${id}`);
     
-    // Use direct URL construction instead of relying on the config's string replacement
-    // This ensures we don't have double slashes or other URL formatting issues
+
     const res = await fetch(
       `${baseURL}roles/${id}`,
       { 

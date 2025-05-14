@@ -30,7 +30,6 @@ router.put("/roles", auth, permit("manage_users"), updateUserRoles);
 router.put("/password", auth, updatePassword);
 
 // ─── Delete a user (admin only) ──────────────────────────────────────────────
-// Changed to use URL parameter instead of body
 router.delete("/:username", auth, permit("manage_users"), deleteUser);
 
 module.exports = router;

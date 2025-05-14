@@ -6,7 +6,7 @@ const roleSchema = new Schema(
     name: {
       type: String,
       required: true,
-      unique: true, // fix typo here
+      unique: true, 
       trim: true,
     },
     permissions: [
@@ -19,5 +19,4 @@ const roleSchema = new Schema(
   { timestamps: true }
 );
 
-// Use `mongoose.model`, not `mongoose.Model`
 module.exports = mongoose.model("Role", roleSchema);

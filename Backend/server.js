@@ -21,12 +21,12 @@ const startServer = async () => {
     const app = express();
 
     // 2. Middlewares
-    // Parse JSON bodies for all request types, including DELETE
+
     app.use(express.json());
-    // Parse URL-encoded bodies (for form submissions, if needed)
+
     app.use(express.urlencoded({ extended: true }));
     
-    // Enable Express to parse request bodies for DELETE requests
+
     app.use((req, res, next) => {
       if (req.method === 'DELETE' && req.headers['content-type'] === 'application/json') {
         console.log('DELETE request body:', req.body);
@@ -35,7 +35,7 @@ const startServer = async () => {
     });
     // Parse cookies
     app.use(cookieParser());
-    // Enable CORS for your frontend origin
+    // Enable CORS
     app.use(
       cors({
         origin: function(origin, callback) {
@@ -62,13 +62,13 @@ const startServer = async () => {
       res.send("🚀 Server is up and running");
     });
 
-    // 4. Mount routers (all prefixed with /api)
+    // 4. Mount routers
     app.use("/api/permissions", permissionRouters);
     app.use("/api/roles", roleRouters);
     app.use("/api/users", userRouters);
     app.use("/api/auth", authRouters);
 
-    // 5. Global error handler (optional)
+    // 5. Global error handler
     app.use((err, req, res, next) => {
       console.error("Unhandled error:", err);
       res.status(500).json({ message: "Internal server error" });

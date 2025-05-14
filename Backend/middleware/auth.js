@@ -4,7 +4,7 @@ const Role = require("../models/admin/roleSchema");
 
 exports.auth = async (req, res, next) => {
   try {
-    // 1. Read the token (assumes HTTP-only cookie, but you could read from Authorization header)
+    // 1. Read the token 
     const token =
       req.cookies.accessToken || req.header("Authorization")?.split(" ")[1];
     if (!token)

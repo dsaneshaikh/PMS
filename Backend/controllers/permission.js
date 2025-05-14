@@ -57,7 +57,7 @@ exports.deletePermission = async (req, res) => {
     res.json({ message: "Permission deleted", id });
   } catch (err) {
     console.error("deletePermission error:", err);
-    // Send more detailed error information including the original error message
+   
     res.status(500).json({ 
       message: "Server error", 
       error: err.message,

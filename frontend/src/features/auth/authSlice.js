@@ -44,6 +44,5 @@ export const authSlice = createSlice({
 
 export const { loginStart, loginSuccess, loginFailure, logout } = authSlice.actions
 
-// Async thunk actions can be added here later if needed
 
 export default authSlice.reducer

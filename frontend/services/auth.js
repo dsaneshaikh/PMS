@@ -5,7 +5,7 @@ export const login = async (username, password) => {
   const url = `${baseURL}${config.endpoints.auth.login}`;
   const options = {
     method: "POST",
-    credentials: "include",            // ← allow cookies
+    credentials: "include",           
     headers: {
       "Content-Type": "application/json",
     },
@@ -15,7 +15,7 @@ export const login = async (username, password) => {
   try {
     const res = await fetch(url, options);
 
-    // Network-level OK?
+
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || `Login failed: ${res.status}`);
@@ -32,7 +32,7 @@ export const logout = async () => {
   const url = `${baseURL}${config.endpoints.auth.logout}`;
   const options = {
     method: "POST",
-    credentials: "include",            // ← allow cookies
+    credentials: "include",           
     headers: {
       "Content-Type": "application/json",
     },

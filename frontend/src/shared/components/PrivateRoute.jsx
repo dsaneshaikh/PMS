@@ -14,8 +14,7 @@ export function AdminRoute({ children }) {
     return <Navigate to="/login" />;
   }
   
-  // This is a simplified check - you may need to enhance this
-  // based on your actual data structure for admin determination
+
   const isAdmin = user && user.isAdmin;
   
   return isAdmin ? children : <Navigate to="/user" />;

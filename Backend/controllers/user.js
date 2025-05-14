@@ -1,4 +1,4 @@
-// controllers/userController.js
+
 
 const User = require("../models/admin/userSchema");
 const Role = require("../models/admin/roleSchema");
@@ -13,7 +13,7 @@ exports.createUser = async (req, res) => {
         .json({ message: "username, password, and roles[] are required" });
     }
 
-    // Store password directly without hashing
+    
 
     // 2. Validate roles
     const foundRoles = await Role.find({ _id: { $in: roles } });
@@ -46,7 +46,7 @@ exports.createUser = async (req, res) => {
 // Get current logged-in user
 exports.getMe = async (req, res) => {
   try {
-    // req.userId set by auth middleware
+  
     const user = await User.findById(req.userId)
       .select("-password")
       .populate({
@@ -123,7 +123,7 @@ exports.updatePassword = async (req, res) => {
         .json({ message: "username and new password are required" });
     }
 
-    // Update with plain password
+
     const updated = await User.findOneAndUpdate(
       { username },
       { password },
@@ -142,7 +142,7 @@ exports.updatePassword = async (req, res) => {
 // Delete a user (admin only)
 exports.deleteUser = async (req, res) => {
   try {
-    // Get username directly from URL params now
+    
     const { username } = req.params;
     
     console.log('DELETE USER - username from params:', username);

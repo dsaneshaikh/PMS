@@ -4,7 +4,7 @@ const baseURL = config.baseURL;
 
 export const getAllPermissions = async () => {
   try {
-    // Get token from localStorage or wherever your auth token is stored
+    // Get token from localStorage
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     
     // Make request with auth header
@@ -29,7 +29,7 @@ export const getAllPermissions = async () => {
 
 export const createPermission = async (name) => {
   try {
-    // Get token from localStorage or wherever your auth token is stored
+    // Get token from localStorage
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     
     const res = await fetch(`${baseURL}${config.endpoints.permissions.list}`, {
@@ -55,13 +55,12 @@ export const createPermission = async (name) => {
 
 export const deletePermission = async (id) => {
   try {
-    // Get token from localStorage or wherever your auth token is stored
+    // Get token from localStorage
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     
     console.log(`Attempting to delete permission with ID: ${id}`);
     
-    // Use direct URL construction instead of relying on the config's string replacement
-    // This ensures we don't have double slashes or other URL formatting issues
+   
     const res = await fetch(
       `${baseURL}permissions/${id}`,
       {
